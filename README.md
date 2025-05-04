@@ -2,7 +2,7 @@
 
 This is a workflow to automate the conversion of PDFs to markdown using the Mistral AI OCR API. It extracts text and images from PDFs and organizes the output into structured markdown documents with images properly linked using Obsidian-style wikilinks.
 
-> **New!!**: There’s now a web app where you can upload PDFs, preview the output, and download the Markdown files—no setup required. Try it here: https://markdownify.up.railway.app/
+> **New!!**: There’s now a web app where you can upload PDFs, preview the output, and download the Markdown files—no setup required. Try it here: https://markdownify.up.railway.app/ (Warning: Servers got busy so might not work, better check the self-host or notebook options).
 
 Want to self-host it? Check the [Local Web App](#option-2-local-web-app) section.
 
