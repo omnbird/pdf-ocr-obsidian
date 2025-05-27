@@ -207,7 +207,7 @@ def index():
 
 @app.route('/check-api-key', methods=['GET'])
 def check_api_key():
-    """检查是否已配置环境变量中的 API key"""
+    """check if the API key is configured in the environment variables"""
     api_key = os.getenv("MISTRAL_API_KEY")
     return jsonify({"has_api_key": bool(api_key)})
 
@@ -218,12 +218,12 @@ def handle_process():
 
     files = request.files.getlist('pdf_files')
     
-    # 优先使用环境变量中的 API key
+    # use the API key from the environment variables first
     api_key = os.getenv("MISTRAL_API_KEY")
     if api_key:
         print(f"Using API Key from environment (first 4 chars): {api_key[:4]}...")
     else:
-        # 如果环境变量中没有，则从表单获取
+        # if the API key is not in the environment variables, get it from the form
         api_key = request.form.get('api_key')
         if api_key:
             print(f"Using API Key from web form (first 4 chars): {api_key[:4]}...")
