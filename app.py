@@ -205,25 +205,30 @@ def create_zip_archive(source_dir: Path, output_zip_path: Path):
 def index():
     return render_template('index.html')
 
+@app.route('/check-api-key', methods=['GET'])
+def check_api_key():
+    """检查是否已配置环境变量中的 API key"""
+    api_key = os.getenv("MISTRAL_API_KEY")
+    return jsonify({"has_api_key": bool(api_key)})
+
 @app.route('/process', methods=['POST'])
 def handle_process():
     if 'pdf_files' not in request.files:
         return jsonify({"error": "No PDF files part in the request"}), 400
 
     files = request.files.getlist('pdf_files')
-    api_key = request.form.get('api_key')
-
-    if not api_key:
-        print("API Key from web form is empty.")
-        # Check if we have a fallback API key from .env (or elsewhere - server-side config)
-        api_key_fallback = os.getenv("MISTRAL_API_KEY") # Try to get from env again
-        if api_key_fallback:
-            api_key = api_key_fallback
-            print(f"Using fallback API Key from environment (first 4 chars): {api_key[:4]}...") # Debug print
-        else:
-            return jsonify({"error": "Mistral API Key is required"}), 400
+    
+    # 优先使用环境变量中的 API key
+    api_key = os.getenv("MISTRAL_API_KEY")
+    if api_key:
+        print(f"Using API Key from environment (first 4 chars): {api_key[:4]}...")
     else:
-        print(f"API Key from web form (first 4 chars): {api_key[:4]}...") # Debug print
+        # 如果环境变量中没有，则从表单获取
+        api_key = request.form.get('api_key')
+        if api_key:
+            print(f"Using API Key from web form (first 4 chars): {api_key[:4]}...")
+        else:
+            return jsonify({"error": "Mistral API Key is required. Please set MISTRAL_API_KEY in environment or provide it in the form."}), 400
 
     if not files or all(f.filename == '' for f in files):
          return jsonify({"error": "No selected PDF files"}), 400
@@ -351,8 +356,8 @@ def download_file(session_id, filename):
     print(f"Serving ZIP for download: {file_path}")
     return send_from_directory(directory, safe_filename, as_attachment=True)
 
-# if __name__ == '__main__':
-#     host = os.getenv('FLASK_HOST', '127.0.0.1')
-#     port = int(os.getenv('FLASK_PORT', 5000))
-#     debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() in ['true', '1', 't']
-#     app.run(host=host, port=port, debug=debug_mode)
+if __name__ == '__main__':
+    host = os.getenv('FLASK_HOST', '0.0.0.0')
+    port = int(os.getenv('FLASK_PORT', 5200))
+    debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() in ['true', '1', 't']
+    app.run(host=host, port=port, debug=debug_mode)

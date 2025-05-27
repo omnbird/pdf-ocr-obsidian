@@ -28,7 +28,7 @@
     <main>
       <section class="form-section">
         <form id="ocr-form">
-          <div class="form-group">
+          <div class="form-group" id="api-key-group">
             <label for="api-key">Mistral API Key</label>
             <div class="password-toggle-group">
               <input type="password" id="api-key" name="api_key" placeholder="Enter your API key">
@@ -37,6 +37,13 @@
             </div>
             <small>Get one at: <a href="https://console.mistral.ai/api-keys" target="_blank">Mistral API</a></small>
             <small>Your key is securely transmitted and not stored long-term.</small>
+          </div>
+          
+          <div class="form-group" id="api-key-configured" style="display: none;">
+            <div class="api-key-status">
+              <i class="fas fa-check-circle" style="color: green;"></i>
+              <span>API Key已从环境变量加载</span>
+            </div>
           </div>
           
           <div class="form-group">
