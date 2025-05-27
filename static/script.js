@@ -6,6 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('submit-btn');
     const statusLog = document.getElementById('status-log');
     const loader = document.getElementById('loader');
+    
+    // API Key elements
+    const apiKeyGroup = document.getElementById('api-key-group');
+    const apiKeyConfigured = document.getElementById('api-key-configured');
 
     // Result Areas
     const resultsArea = document.getElementById('results-area');
@@ -16,6 +20,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // Error Area
     const errorArea = document.getElementById('error-area');
     const errorMessage = document.getElementById('error-message');
+    
+    // Check if API key is configured in environment
+    async function checkApiKey() {
+        try {
+            const response = await fetch('/check-api-key');
+            const result = await response.json();
+            if (result.has_api_key) {
+                // Hide API key input, show configured message
+                apiKeyGroup.style.display = 'none';
+                apiKeyConfigured.style.display = 'block';
+                logStatus('API Key loaded from environment variables.');
+            } else {
+                // Show API key input
+                apiKeyGroup.style.display = 'block';
+                apiKeyConfigured.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Error checking API key:', error);
+            // Default to showing input if check fails
+            apiKeyGroup.style.display = 'block';
+            apiKeyConfigured.style.display = 'none';
+        }
+    }
+    
+    // Check API key on page load
+    checkApiKey();
 
     function logStatus(message) {
         console.log(message);
@@ -139,9 +169,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const apiKey = apiKeyInput.value.trim();
         const files = fileInput.files;
 
-        if (!apiKey || files.length === 0) {
-             logStatus('Error: API Key and at least one PDF file are required.');
-             errorMessage.textContent = 'API Key and at least one PDF file are required.';
+        // Check if we need API key from user (only if not configured in environment)
+        const needsApiKey = apiKeyGroup.style.display !== 'none';
+        
+        if (needsApiKey && !apiKey) {
+             logStatus('Error: API Key is required.');
+             errorMessage.textContent = 'API Key is required.';
+             errorArea.style.display = 'block';
+             return;
+        }
+        
+        if (files.length === 0) {
+             logStatus('Error: At least one PDF file is required.');
+             errorMessage.textContent = 'At least one PDF file is required.';
              errorArea.style.display = 'block';
              return;
         }
@@ -151,7 +191,10 @@ document.addEventListener('DOMContentLoaded', () => {
         logStatus('Starting PDF processing...');
 
         const formData = new FormData();
-        formData.append('api_key', apiKey);
+        // Only append API key if user provided one (environment key will be used automatically)
+        if (apiKey) {
+            formData.append('api_key', apiKey);
+        }
         for (let i = 0; i < files.length; i++) {
             formData.append('pdf_files', files[i]);
             logStatus(`Adding file: ${files[i].name}`);
