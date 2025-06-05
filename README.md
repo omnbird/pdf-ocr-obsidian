@@ -35,6 +35,12 @@ python app.py
 ```
 Then open your browser at `http://localhost:5000/`
 
+### Customizing Page Separators
+
+The app inserts `---` between PDF pages by default. Set the `PAGE_SEPARATOR` environment
+variable to change this text or leave it empty to merge pages without separators.
+The web interface also lets you toggle and edit the separator before processing.
+
 ## Option 3: Jupyter Notebook
 
 ### Installation

@@ -2,10 +2,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('ocr-form');
     const apiKeyInput = document.getElementById('api-key');
     const fileInput = document.getElementById('pdf-files');
-    const apiKeyToggle = document.getElementById('api-key-toggle'); 
+    const apiKeyToggle = document.getElementById('api-key-toggle');
     const submitBtn = document.getElementById('submit-btn');
     const statusLog = document.getElementById('status-log');
     const loader = document.getElementById('loader');
+
+    // Page separator elements
+    const includeSeparatorCheckbox = document.getElementById('include-separator');
+    const separatorTextInput = document.getElementById('separator-text');
     
     // API Key elements
     const apiKeyGroup = document.getElementById('api-key-group');
@@ -46,6 +50,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Check API key on page load
     checkApiKey();
+
+    if (includeSeparatorCheckbox && separatorTextInput) {
+        separatorTextInput.disabled = !includeSeparatorCheckbox.checked;
+        includeSeparatorCheckbox.addEventListener('change', () => {
+            separatorTextInput.disabled = !includeSeparatorCheckbox.checked;
+        });
+    }
 
     function logStatus(message) {
         console.log(message);
@@ -194,6 +205,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Only append API key if user provided one (environment key will be used automatically)
         if (apiKey) {
             formData.append('api_key', apiKey);
+        }
+        if (includeSeparatorCheckbox) {
+            const sepValue = includeSeparatorCheckbox.checked ? separatorTextInput.value : '';
+            formData.append('page_separator', sepValue);
         }
         for (let i = 0; i < files.length; i++) {
             formData.append('pdf_files', files[i]);
