@@ -30,6 +30,7 @@ UPLOAD_FOLDER = Path(os.getenv('UPLOAD_FOLDER', 'uploads'))
 OUTPUT_FOLDER = Path(os.getenv('OUTPUT_FOLDER', 'output'))
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
 ALLOWED_EXTENSIONS = {'pdf'}
+PAGE_SEPARATOR_DEFAULT = os.getenv('PAGE_SEPARATOR', '---')
 
 UPLOAD_FOLDER.mkdir(exist_ok=True)
 OUTPUT_FOLDER.mkdir(exist_ok=True)
@@ -50,9 +51,15 @@ def replace_images_in_markdown_with_wikilinks(markdown_str: str, image_mapping: 
 
 # --- Core Processing Logic ---
 
-def process_pdf(pdf_path: Path, api_key: str, session_output_dir: Path) -> tuple[str, str, list[str], Path, Path]:
+def process_pdf(pdf_path: Path, api_key: str, session_output_dir: Path, page_separator: str | None = PAGE_SEPARATOR_DEFAULT) -> tuple[str, str, list[str], Path, Path]:
     """
     Processes a single PDF file using Mistral OCR and saves results.
+
+    Args:
+        pdf_path: Path to the PDF file.
+        api_key: Mistral API key.
+        session_output_dir: Directory to store output.
+        page_separator: Text to insert between pages. Use empty string to join pages without a separator.
 
     Returns:
         A tuple (pdf_base_name, final_markdown_content, list_of_image_filenames, path_to_markdown_file, path_to_images_dir)
@@ -151,7 +158,8 @@ def process_pdf(pdf_path: Path, api_key: str, session_output_dir: Path) -> tuple
             updated_page_markdown = replace_images_in_markdown_with_wikilinks(current_page_markdown, page_image_mapping)
             updated_markdown_pages.append(updated_page_markdown)
 
-        final_markdown_content = "\n\n---\n\n".join(updated_markdown_pages) # Page separator
+        separator = f"\n\n{page_separator}\n\n" if page_separator else "\n\n"
+        final_markdown_content = separator.join(updated_markdown_pages)
         output_markdown_path = pdf_output_dir / f"{pdf_base_sanitized}_output.md"
 
         try:
@@ -210,7 +218,7 @@ def create_zip_archive(source_dir: Path, output_zip_path: Path):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', default_page_separator=PAGE_SEPARATOR_DEFAULT)
 
 @app.route('/check-api-key', methods=['GET'])
 def check_api_key():
@@ -262,6 +270,10 @@ def handle_process():
     processing_errors = []
     if invalid_files: processing_errors.append(f"Skipped non-PDF files: {', '.join(invalid_files)}")
 
+    page_separator = request.form.get('page_separator')
+    if page_separator is None:
+        page_separator = PAGE_SEPARATOR_DEFAULT
+
     for file in valid_files:
         original_filename = file.filename
         filename_sanitized = secure_filename(original_filename)
@@ -274,7 +286,7 @@ def handle_process():
 
             # Process PDF - Capture new return values
             processed_pdf_base, markdown_content, image_filenames, md_path, img_dir = process_pdf(
-                temp_pdf_path, api_key, session_output_dir
+                temp_pdf_path, api_key, session_output_dir, page_separator
             )
 
             zip_filename = f"{processed_pdf_base}_output.zip"

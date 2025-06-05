@@ -52,6 +52,14 @@
             <small>Select one or more PDFs.</small>
             <small>Note: API rate limits may apply.</small>
           </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="include-separator" {% if default_page_separator %}checked{% endif %}>
+              Insert page separators
+            </label>
+            <input type="text" id="separator-text" value="{{ default_page_separator }}" placeholder="---" style="width: 80px; margin-left: 10px;">
+            <small>Leave blank to merge pages without separators.</small>
+          </div>
           <button type="submit" id="submit-btn">Convert PDFs</button>
         </form>
       </section>
