@@ -60,10 +60,17 @@ def process_pdf(pdf_path: Path, api_key: str, session_output_dir: Path) -> tuple
         Exception: For processing errors.
     """
     pdf_base = pdf_path.stem
-    pdf_base_sanitized = secure_filename(pdf_base) # Use sanitized version for directory/file names
+    base_sanitized_original = secure_filename(pdf_base)
+    pdf_base_sanitized = base_sanitized_original
     print(f"Processing {pdf_path.name}...")
 
     pdf_output_dir = session_output_dir / pdf_base_sanitized
+    counter = 1
+    while pdf_output_dir.exists():
+        pdf_base_sanitized = f"{base_sanitized_original}_{counter}"
+        pdf_output_dir = session_output_dir / pdf_base_sanitized
+        counter += 1
+
     pdf_output_dir.mkdir(exist_ok=True)
     images_dir = pdf_output_dir / "images"
     images_dir.mkdir(exist_ok=True)
@@ -258,11 +265,8 @@ def handle_process():
     for file in valid_files:
         original_filename = file.filename
         filename_sanitized = secure_filename(original_filename)
-        pdf_base_sanitized = secure_filename(Path(original_filename).stem) # Get sanitized base name
         temp_pdf_path = session_upload_dir / filename_sanitized
-        zip_filename = f"{pdf_base_sanitized}_output.zip"
-        zip_output_path = session_output_dir / zip_filename
-        individual_output_dir = session_output_dir / pdf_base_sanitized # Dir containing MD + images/
+
 
         try:
             print(f"Saving uploaded file temporarily to: {temp_pdf_path}")
@@ -273,7 +277,9 @@ def handle_process():
                 temp_pdf_path, api_key, session_output_dir
             )
 
-            # Create ZIP (using the individual output dir)
+            zip_filename = f"{processed_pdf_base}_output.zip"
+            zip_output_path = session_output_dir / zip_filename
+            individual_output_dir = session_output_dir / processed_pdf_base
             create_zip_archive(individual_output_dir, zip_output_path)
 
             download_url = url_for('download_file', session_id=session_id, filename=zip_filename, _external=True)
