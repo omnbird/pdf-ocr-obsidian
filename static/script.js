@@ -110,6 +110,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let markdownForDisplay = resultItem.preview.markdown;
 
+        // 处理标准 markdown 图片格式 ![alt](path) 和 Obsidian wikilinks 格式 ![[image-name]]
+        markdownForDisplay = markdownForDisplay.replace(
+            /!\[([^\]]*)\]\(([^)]+)\)/g,
+            (match, altText, imagePath) => {
+                // 如果路径是 images/filename 格式，转换为正确的 URL
+                if (imagePath.startsWith('images/')) {
+                    const filename = imagePath.replace('images/', '');
+                    const imageUrl = `/view_image/${sessionId}/${resultItem.preview.pdf_base}/${filename}`;
+                    const safeAltText = altText.replace(/"/g, '"');
+                    return `<img src="${imageUrl}" alt="${safeAltText}" style="max-width: 90%; height: auto; display: block; margin: 10px 0; border: 1px solid #ccc;">`;
+                }
+                return match; // 如果不是我们的格式，保持原样
+            }
+        );
+        
+        // 处理 Obsidian wikilinks 格式 ![[image-name]]
         markdownForDisplay = markdownForDisplay.replace(
             /!\[\[(.*?)\]\]/g,
             (match, filename) => {
@@ -202,10 +218,19 @@ document.addEventListener('DOMContentLoaded', () => {
         logStatus('Starting PDF processing...');
 
         const formData = new FormData();
-        // Only append API key if user provided one (environment key will be used automatically)
-        if (apiKey) {
-            formData.append('api_key', apiKey);
+        formData.append('api_key', apiKey);
+        
+        // 添加其他表单字段
+        const outputFormat = document.getElementById('output-format');
+        if (outputFormat) {
+            formData.append('output_format', outputFormat.value);
         }
+        
+        const generatePdf = document.getElementById('generate-pdf');
+        if (generatePdf && generatePdf.checked) {
+            formData.append('generate_pdf', 'true');
+        }
+        
         if (includeSeparatorCheckbox) {
             const sepValue = includeSeparatorCheckbox.checked ? separatorTextInput.value : '';
             formData.append('page_separator', sepValue);
@@ -238,10 +263,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (result.results.length > 0) {
                     resultsArea.style.display = 'block'; // Show downloads area
                     result.results.forEach(item => {
+                        // ZIP 下载链接（现在包含 PDF 文件）
                         const li = document.createElement('li');
                         const link = document.createElement('a');
                         link.href = item.download_url;
-                        link.textContent = `Download ${item.zip_filename}`;
+                        
+                        // 根据是否生成 PDF 来调整文本
+                        let linkText = `Download ${item.zip_filename}`;
+                        if (item.pdf_filename) {
+                            linkText += ` (includes PDF version)`;
+                        }
+                        link.textContent = linkText;
                         li.appendChild(link);
                         downloadLinksList.appendChild(li);
 

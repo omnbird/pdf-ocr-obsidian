@@ -52,12 +52,31 @@
             <small>Select one or more PDFs.</small>
             <small>Note: API rate limits may apply.</small>
           </div>
+          
+          <div class="form-group">
+            <label for="output-format">Output Format</label>
+            <select id="output-format" name="output_format">
+              <option value="standard">Standard Markdown (for web preview)</option>
+              <option value="obsidian">Obsidian Wikilinks (for Obsidian notes)</option>
+            </select>
+            <small>Choose the format for image links in the generated markdown.</small>
+          </div>
+          
+          <div class="form-group">
+            <label for="generate-pdf">Additional Options</label>
+            <div class="checkbox-group">
+              <input type="checkbox" id="generate-pdf" name="generate_pdf" value="true">
+              <label for="generate-pdf">Generate PDF version (requires md-to-pdf)</label>
+            </div>
+            <small>Create a PDF version with embedded images, A4 format, and custom styling. The PDF will be included in the ZIP download. Requires Chrome browser.</small>
+          </div>
+          
           <div class="form-group">
             <label>
-              <input type="checkbox" id="include-separator" {% if default_page_separator %}checked{% endif %}>
+              <input type="checkbox" id="include-separator">
               Insert page separators
             </label>
-            <input type="text" id="separator-text" value="{{ default_page_separator }}" placeholder="---" style="width: 80px; margin-left: 10px;">
+            <input type="text" id="separator-text" value="" placeholder="---" style="width: 80px; margin-left: 10px;">
             <small>Leave blank to merge pages without separators.</small>
           </div>
           <button type="submit" id="submit-btn">Convert PDFs</button>

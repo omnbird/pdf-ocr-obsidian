@@ -1,0 +1,194 @@
+@page {
+  margin: 10mm 15mm 10mm 15mm !important;
+}
+
+body {
+  font-family: "DejaVu Serif", "Times New Roman", "Liberation Serif", serif;
+  font-size: 18pt;
+  margin: 0;
+  padding: 0;
+  line-height: 1.7;      /* 增加行高，提高可读性 */
+  text-align: justify;   /* 两端对齐 */
+  hyphens: auto;         /* 自动断词（可选） */
+  color: #333;           /* 深灰色，比纯黑更柔和 */
+}
+
+/* 图片样式 - 自动居中并适合页面 */
+img {
+  display: block;
+  margin: 20px auto;     /* 上下间距20px，左右自动居中 */
+  max-width: 90%;        /* 最大宽度为容器的90% */
+  height: auto;          /* 保持宽高比 */
+  page-break-inside: avoid; /* 避免图片被分页 */
+  break-inside: avoid;   /* 现代CSS属性 */
+}
+
+/* 图片容器样式 */
+p:has(img) {
+  text-align: center;    /* 图片段落居中 */
+  margin: 20px 0;        /* 上下间距 */
+}
+
+/* 确保图片不会超出页面边界 */
+img {
+  max-height: 80vh;      /* 最大高度为视口高度的80% */
+  object-fit: contain;   /* 保持比例，完整显示 */
+}
+
+/* 图片标题样式 */
+img + em,
+img + p:has(em) {
+  text-align: center;
+  font-style: italic;
+  color: #666;
+  margin-top: 5px;
+  font-size: 0.9em;
+}
+
+/* 标题样式 */
+h1, h2, h3, h4, h5, h6 {
+  color: #2c3e50;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+h1 {
+  font-size: 2em;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 0.3em;
+}
+
+h2 {
+  font-size: 1.5em;
+  border-bottom: 1px solid #bdc3c7;
+  padding-bottom: 0.2em;
+}
+
+/* 段落样式 */
+p {
+  margin: 1em 0;
+  text-indent: 2em;      /* 首行缩进 */
+}
+
+/* 列表样式 */
+ul, ol {
+  margin: 1em 0;
+  padding-left: 2em;
+}
+
+li {
+  margin: 0.5em 0;
+  line-height: 1.6;
+}
+
+/* 代码块样式 */
+pre {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  padding: 1em;
+  margin: 1em 0;
+  overflow-x: auto;
+  font-family: "Courier New", "Monaco", "Consolas", monospace;
+  font-size: 0.9em;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+code {
+  background-color: #f1f3f4;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: "Courier New", "Monaco", "Consolas", monospace;
+  font-size: 0.9em;
+}
+
+/* 引用样式 */
+blockquote {
+  border-left: 4px solid #3498db;
+  margin: 1em 0;
+  padding: 0.5em 1em;
+  background-color: #f8f9fa;
+  font-style: italic;
+}
+
+/* 表格样式 */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+/* 水平分割线 */
+hr {
+  border: none;
+  border-top: 2px solid #bdc3c7;
+  margin: 2em 0;
+}
+
+/* 链接样式 */
+a {
+  color: #3498db;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* 强调文本 */
+strong {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+em {
+  font-style: italic;
+  color: #7f8c8d;
+}
+
+/* 页面分隔符样式 */
+.page-separator {
+  text-align: center;
+  margin: 2em 0;
+  color: #95a5a6;
+  font-style: italic;
+  border-top: 1px solid #ecf0f1;
+  padding-top: 1em;
+}
+
+/* 打印优化 */
+@media print {
+  body {
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+  
+  img {
+    max-width: 100%;
+    max-height: 60vh;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  
+  pre, blockquote {
+    page-break-inside: avoid;
+  }
+} 
