@@ -275,7 +275,7 @@ def create_pdf_from_markdown(markdown_path: Path, output_pdf_path: Path) -> bool
         cmd = [
             'md-to-pdf', 
             str(markdown_path),
-            '--pdf-options', '{"outline": true, "format":"A4"}',
+            '--pdf-options', '{"outline": true, "height":"9in", "width":"6in"}',
             '--stylesheet', str(css_path),
             '--launch-options', '{"args": ["--no-sandbox", "--disable-setuid-sandbox"]}'
         ]

@@ -1,13 +1,13 @@
 @page {
-  margin: 10mm 15mm 10mm 15mm !important;
+  margin: 10mm 20mm 10mm 20mm !important;
 }
 
 body {
   font-family: "DejaVu Serif", "Times New Roman", "Liberation Serif", serif;
-  font-size: 18pt;
+  font-size: 9pt;
   margin: 0;
   padding: 0;
-  line-height: 1.7;      /* 增加行高，提高可读性 */
+  line-height: 1.2;      /* 减少行高，减少段落间距 */
   text-align: justify;   /* 两端对齐 */
   hyphens: auto;         /* 自动断词（可选） */
   color: #333;           /* 深灰色，比纯黑更柔和 */
@@ -68,7 +68,7 @@ h2 {
 
 /* 段落样式 */
 p {
-  margin: 1em 0;
+  margin: 0.2em 0;       /* 减少段落间距 */
   text-indent: 2em;      /* 首行缩进 */
 }
 
@@ -176,7 +176,7 @@ em {
 @media print {
   body {
     font-size: 12pt;
-    line-height: 1.4;
+    line-height: 1.3;
   }
   
   img {
